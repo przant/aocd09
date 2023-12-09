@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-    pf, err := os.Open("example.txt")
+    pf, err := os.Open("input.txt")
     if err != nil {
         log.Fatalf("while opening file %q: %s", pf.Name(), err)
     }
@@ -41,9 +41,10 @@ func history(line string) int {
 
     sSeqs = append(sSeqs, seq1)
 
+    sum := sSeqs[0][len(sSeqs[0])-1]
     for i := 0; i < len(sSeqs[0]); i++ {
-        seqN := make([]int, 0)
         zeroDiff := true
+        seqN := make([]int, 0)
         length := len(sSeqs[0])
         for j := 0; j < length-(i+1); j++ {
             diff := sSeqs[i][j+1] - sSeqs[i][j]
@@ -52,22 +53,12 @@ func history(line string) int {
                 zeroDiff = false
             }
         }
+        sum += seqN[len(seqN)-1]
         sSeqs = append(sSeqs, seqN)
         if zeroDiff {
             break
         }
     }
-
-    return predicVal(sSeqs)
-}
-
-func predicVal(seqs [][]int) int {
-    sum := 0
-    for row := len(seqs) - 1; row >= 0; row-- {
-        col := len(seqs[row]) - 1
-        sum += seqs[row][col]
-    }
-
     return sum
 }
 
