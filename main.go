@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-    pf, err := os.Open("input.txt")
+    pf, err := os.Open("example.txt")
     if err != nil {
         log.Fatalf("while opening file %q: %s", pf.Name(), err)
     }
@@ -25,29 +25,38 @@ func main() {
 
     total := int64(0)
     for _, history := range lines {
+
         total += predict(history)
     }
     fmt.Println(total)
 }
 
 func predict(history string) int64 {
-    sequence := make([]int64, 0)
+
+    seq := make([]int64, 0)
+    sSeq := make([][]int64, 0)
 
     for _, strNum := range strings.Split(strings.TrimSpace(history), " ") {
         num, _ := strconv.Atoi(strings.TrimSpace(strNum))
-        sequence = append(sequence, int64(num))
+        seq = append(seq, int64(num))
     }
 
-    fmt.Println(sequence)
-    result := sequence[len(sequence)-1]
-    for !allZeroes(sequence) {
-        sequence = nextSequence(sequence)
-        if len(sequence) > 0 {
-            result += sequence[len(sequence)-1]
+    sSeq = append(sSeq, seq)
+    rightVal := seq[len(seq)-1]
+
+    for i := 0; !allZeroes(sSeq[i]); i++ {
+        sSeq = append(sSeq, nextSequence(sSeq[i]))
+        if len(sSeq[i+1]) > 0 {
+            rightVal += sSeq[i+1][len(sSeq[i+1])-1]
         }
     }
+    leftVal := int64(0)
+    for i := len(sSeq) - 1; i > 0; i-- {
+        leftVal = -(leftVal - sSeq[i-1][0])
+    }
+    fmt.Println(leftVal, seq, rightVal)
     fmt.Println("***************************************************************************")
-    return result
+    return leftVal
 }
 
 func nextSequence(seq []int64) []int64 {
@@ -56,7 +65,6 @@ func nextSequence(seq []int64) []int64 {
     for i := 0; i < len(seq)-1; i++ {
         ns = append(ns, seq[i+1]-seq[i])
     }
-    fmt.Println(ns)
     return ns
 }
 
