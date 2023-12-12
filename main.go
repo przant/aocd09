@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-    pf, err := os.Open("example.txt")
+    pf, err := os.Open("input.txt")
     if err != nil {
         log.Fatalf("while opening file %q: %s", pf.Name(), err)
     }
@@ -38,6 +38,7 @@ func predict(history string) int64 {
         sequence = append(sequence, int64(num))
     }
 
+    fmt.Println(sequence)
     result := sequence[len(sequence)-1]
     for !allZeroes(sequence) {
         sequence = nextSequence(sequence)
@@ -45,6 +46,7 @@ func predict(history string) int64 {
             result += sequence[len(sequence)-1]
         }
     }
+    fmt.Println("***************************************************************************")
     return result
 }
 
@@ -54,12 +56,13 @@ func nextSequence(seq []int64) []int64 {
     for i := 0; i < len(seq)-1; i++ {
         ns = append(ns, seq[i+1]-seq[i])
     }
+    fmt.Println(ns)
     return ns
 }
 
 func allZeroes(row []int64) bool {
     for i := 0; i < len(row); i++ {
-        if row[i] > 0 {
+        if row[i] != 0 {
             return false
         }
     }
