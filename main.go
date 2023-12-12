@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-    pf, err := os.Open("example.txt")
+    pf, err := os.Open("input.txt")
     if err != nil {
         log.Fatalf("while opening file %q: %s", pf.Name(), err)
     }
