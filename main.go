@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-    pf, err := os.Open("input.txt")
+    pf, err := os.Open("example.txt")
     if err != nil {
         log.Fatalf("while opening file %q: %s", pf.Name(), err)
     }
@@ -23,51 +23,56 @@ func main() {
         lines = append(lines, scnr.Text())
     }
 
-    total := 0
-    for _, line := range lines {
-        total += history(line)
+    total := int64(0)
+    for _, history := range lines {
+        total += predict(history)
     }
     fmt.Println(total)
 }
 
-func history(line string) int {
-    sSeqs := make([][]int, 0)
-    nums := strings.Fields(line)
+func predict(history string) int64 {
+    sequence := make([]int64, 0)
 
-    seq1 := make([]int, 0)
-    for _, num := range nums {
-        seq1 = append(seq1, atoi(num))
+    for _, strNum := range strings.Split(strings.TrimSpace(history), " ") {
+        num, _ := strconv.Atoi(strings.TrimSpace(strNum))
+        sequence = append(sequence, int64(num))
     }
 
-    sSeqs = append(sSeqs, seq1)
-
-    sum := sSeqs[0][len(sSeqs[0])-1]
-    for i := 0; i < len(sSeqs[0]); i++ {
-        zeroDiff := true
-        seqN := make([]int, 0)
-        length := len(sSeqs[0])
-        for j := 0; j < length-(i+1); j++ {
-            diff := sSeqs[i][j+1] - sSeqs[i][j]
-            seqN = append(seqN, diff)
-            if diff > 0 {
-                zeroDiff = false
-            }
-        }
-        sum += seqN[len(seqN)-1]
-        sSeqs = append(sSeqs, seqN)
-        if zeroDiff {
-            break
+    result := sequence[len(sequence)-1]
+    for !allZeroes(sequence) {
+        sequence = nextSequence(sequence)
+        if len(sequence) > 0 {
+            result += sequence[len(sequence)-1]
         }
     }
-    return sum
+    return result
 }
 
-func atoi(str string) int {
+func nextSequence(seq []int64) []int64 {
+    ns := make([]int64, 0)
+
+    for i := 0; i < len(seq)-1; i++ {
+        ns = append(ns, seq[i+1]-seq[i])
+    }
+    return ns
+}
+
+func allZeroes(row []int64) bool {
+    for i := 0; i < len(row); i++ {
+        if row[i] > 0 {
+            return false
+        }
+    }
+
+    return true
+}
+
+func atoi(str string) uint {
     num, err := strconv.Atoi(str)
     if err != nil {
         log.Printf("while parsing string %q into a num: %s", str, err)
         return 0
     }
 
-    return num
+    return uint(num)
 }
